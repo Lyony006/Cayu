@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAYU Billing System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    
+    <div class="top-controls no-print">
+        <div class="search-group">
+            <input type="text" id="vanSearch" placeholder="by Lyony..." onchange="searchVan()">
+            <button class="btn-search" onclick="searchVan()">🔍 Search Van</button>
+        </div>
+
+        <div class="list-group">
+            <input type="number" id="yearFilter" placeholder="Year" value="2026" class="year-input">
+            <button class="btn-list" onclick="openBillList()">📂 Bill List</button>
+        </div>
+    </div>
+
+    <div class="bill-no-container">
+        <label>BILL NO:</label>
+        <input type="text" id="billNoInput" value="1000-25" placeholder="XXXX-XX">
+    </div>
+
+    <div id="billListModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeBillList()">&times;</span>
+            <h2>Saved Bills</h2>
+            <div id="billListContainer"></div>
+        </div>
+    </div>
+    
+    <div class="letterhead">
+        <img src="logo.png" alt="Company Logo" class="company-logo">
+        <h1 class="company-name">CAYU TRANSPORT</h1>
+        <div class="company-details">
+            <div class="detail-line">NRA, Cebu City</div>
+            <div class="detail-line">Non-VAT Reg. TIN: 264-618-743-000</div>
+            <div class="detail-line">cayu.transport@yahoo.com, 8886271/09222946922/01974038971</div>
+        </div>
+
+        <div class="header-gap"></div>
+        <h2 class="doc-title">BILLING STATEMENT</h2>
+    </div>
+
+    <hr style="margin-bottom: 20px; border: 0; border-top: 1px solid #ccc;">
+    
+    <div class="header-grid">
+        <div class="form-group" style="position: relative;">
+            <label>Bill To:</label>
+            <input type="text" id="clientName" autocomplete="off" placeholder="Type to search" oninput="handleClientSearch(this.value)">
+            <div id="suggestionBox" class="suggestions-list"></div>
+        </div>
+        <div class="form-group">
+            <label>Date:</label>
+            <input type="date" id="billDate">
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label>Service:</label>
+        <input type="text" id="serviceDesc" value="">
+    </div>
+
+    <h2 class="table-details">DETAILS</h2>
+    <div class="table-wrapper">
+        <table id="billingTable">
+            <thead>
+                <tr>
+                    <th style="width: 10px;"></th>
+                    <th style="width: 100px;">Van #</th>
+                    <th style="width: 35px;">Size</th>
+                    <th style="width: 65px;" contenteditable="true">P-out</th>
+                    <th style="width: 65px;" contenteditable="true">Delivery</th>
+                    <th style="width: 65px;" contenteditable="true">P-out mt</th>
+                    <th style="width: 110px;">Eir/Tid</th> 
+                    <th style="width: 120px;">Remarks</th> 
+                    <th style="width: 60px;">Amount</th>
+                    <th class="no-print"></th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                </tbody>
+        </table>
+    </div>
+
+    <div class="button-row no-print">
+        <button class="btn btn-blue" onclick="addRow()">+ Add Van Row</button>
+        <button class="btn btn-purple" onclick="addFeeRow()">+ Add Fee/Spacing Row</button>
+        <button class="btn btn-green" onclick="saveRecord()">Save / Update Record</button>
+        <button class="btn btn-red" onclick="resetForm()">Clear / New</button>
+    </div>
+
+    <div id="editControls" class="button-row no-print" style="display: none; margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 10px;">
+        <button class="btn" style="background-color: #6610f2; color: white;" onclick="printBill()">🖨️ Print Bill</button>
+        <button class="btn" style="background-color: #dc3545; color: white;" onclick="deleteRecord()">🗑️ Delete Permanently</button>
+    </div>
+
+    <div class="footer-summary">
+        <h3 class="total-display">TOTAL AMOUNT PAYABLE Php <span id="grandTotal">0.00</span></h3>
+    </div> <div class="signatures-container">
+        <div class="sig-row">
+            <div class="sig-col">
+                <p>Prepared by:</p>
+                <div class="sig-space"></div>
+                <div class="sig-name" contenteditable="true">Janna Dawn E. Magno</div>
+                <div class="sig-title" contenteditable="true">Billing Analyst</div>
+            </div>
+
+            <div class="sig-col center-text"> 
+                <div class="total-words" contenteditable="true">
+                    Zero Pesos Only
+                </div>
+                <div class="received-by-section">
+                    <div class="received-by">Received by:</div>
+                    <div class="sig-title-received">Print name date & Signature</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sig-row" style="margin-top: 3px;">
+            <div class="sig-col">
+                <p>Noted By:</p>
+                <div class="sig-space"></div>
+                <div class="sig-name" contenteditable="true">Nerthus E. Yu Vega</div>
+                <div class="sig-title" contenteditable="true">CAYU Transport</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-note" contenteditable="true">
+        Note: All bills are payable on demand unless agreed upon. Should you find any exception to our bill, please communicate directly with Cayu Transport. If within 5 days after submission, we do not hear from you, we will assume that everything is in order and would therefore expect your payment within the agreed period.
+    </div>
+
+</div> <script src="main.js"></script>
+</body>
+</html>
+
