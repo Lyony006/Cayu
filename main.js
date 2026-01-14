@@ -45,7 +45,7 @@ function addRow(data = {}) {
         <td><input type="text" class="tbl-input p_mt" value="${data.p_mt || ''}"></td>
         <td><input type="text" class="tbl-input eir" value="${data.eir || ''}"></td>
         <td><input type="text" class="tbl-input remarks" value="${data.remarks || ''}"></td>
-        <td><input type="number" step="0.01" class="tbl-input amt" value="${data.amt || ''}" onchange="formatAmount(this)"></td>
+        <td><input type="text" step="0.01" class="tbl-input amt" value="${data.amt || ''}" onchange="formatAmount(this)"></td>
         <td class="no-print" style="text-align:center;">
             <button onclick="deleteRow(this)" style="background:red; color:white; border:none; width:25px; cursor:pointer;">x</button>
         </td>
@@ -70,7 +70,7 @@ function addFeeRow(data = {}) {
                    value="${data.fee_desc || ''}">
         </td>
         <td><input type="text" class="tbl-input remarks" value="${data.remarks || ''}"></td>
-        <td><input type="number" step="0.01" class="tbl-input amt" value="${data.amt || ''}" onchange="formatAmount(this)"></td>
+        <td><input type="text" step="0.01" class="tbl-input amt" value="${data.amt || ''}" onchange="formatAmount(this)"></td>
         <td class="no-print" style="text-align:center;">
             <button onclick="deleteRow(this)" style="background:red; color:white; border:none; width:25px; cursor:pointer;">x</button>
         </td>
@@ -144,23 +144,48 @@ function closeBillList() {
 }
 
 // --- UTILS ---
+// This cleans the input for calculation
+function parseValue(val) {
+    if (typeof val === 'number') return val;
+    // Remove commas so parseFloat can read it correctly
+    return parseFloat(val.replace(/,/g, '')) || 0;
+}
+
+// This adds the commas automatically
+function formatAmount(input) {
+    // 1. Get the raw number (remove existing commas)
+    let rawValue = input.value.replace(/,/g, '');
+    let number = Math.floor(parseFloat(rawValue));
+
+    // 2. If it's a valid number, format it
+    if (!isNaN(number)) {
+        // Formats to "2,000" without decimals
+        input.value = number.toLocaleString('en-US');
+    }
+}
 
 // --- IMPROVED CALC TOTAL ---
 function calcTotal() {
     let total = 0;
     document.querySelectorAll('.amt').forEach(field => {
-        total += parseFloat(field.value) || 0;
+        // FIX: Use parseValue instead of parseFloat
+        total += parseValue(field.value); 
     });
 
     const display = document.getElementById('grandTotal');
-    if(display) display.innerText = total.toLocaleString(undefined, {minimumFractionDigits: 2});
+    if(display) {
+        display.innerText = total.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
 
-    // Update automatic words
     const totalWordsDiv = document.querySelector('.total-words');
     if (totalWordsDiv) {
         totalWordsDiv.innerText = numberToEnglish(total);
     }
 }
+
 
 // --- SMART SAVE LOGIC ---
 function saveRecord() {
@@ -438,8 +463,8 @@ window.onbeforeprint = function() {
     page1Info.innerHTML = `<div>BILL NO: ${billNoValue}</div>${pageLabelHtml}`;
     page1Header.appendChild(page1Info);
 
-    if (rowCount > 10) {
-        let remainingRows = rows.slice(20); 
+    if (rowCount > 11) {
+        let remainingRows = rows.slice(21); 
         let currentPageNum = 2;
 
         const contNote1 = document.createElement('div');
@@ -463,7 +488,7 @@ window.onbeforeprint = function() {
             pageDiv.appendChild(clonedHeader);
 
             const moveFooterThreshold = 14;
-            const maxCapacity = 22;
+            const maxCapacity = 2;
             
             let sliceSize = (remainingRows.length > moveFooterThreshold) ? maxCapacity : remainingRows.length;
             const pageRows = remainingRows.splice(0, sliceSize);
@@ -498,25 +523,36 @@ window.onbeforeprint = function() {
 
                 currentPageNum++;
 
-                if (remainingRows.length === 0) {
-                    // THIS IS PAGE 3 (FOOTER ONLY PAGE)
-                    const lastPage = document.createElement('div');
-                    lastPage.className = 'force-page-break temp-print-page';
-                    
-                    // RE-CLONE HEADER FOR FOOTER-ONLY PAGE
-                    const finalHeader = page1Header.cloneNode(true);
-                    
-                    // FIX: Manually ensure the Bill No and Page Number are visible in the final clone
-                    const finalInfo = finalHeader.querySelector('#temp-page1-info');
+if (remainingRows.length === 0) {
+    // THIS IS PAGE 3 (OR THE FINAL FOOTER-ONLY PAGE)
+    const lastPage = document.createElement('div');
+    lastPage.className = 'force-page-break temp-print-page';
+    
+    // 1. RE-CLONE HEADER
+    const finalHeader = page1Header.cloneNode(true);
+    finalHeader.classList.add('print-header-clone');
+    
+    // 2. FIX: Manually find the info div inside this specific clone
+    // We use querySelector on 'finalHeader' to ensure we touch only this page's header
+    const finalInfo = finalHeader.querySelector('.bill-info-print');
+    
+    if (finalInfo) {
+        const finalPageNum = currentPageNum; // Increment to Page 3
+        finalInfo.innerHTML = `
+            <div>BILL NO: ${billNoValue}</div>
+            <div class="print-page-label">Page ${finalPageNum}</div>
+        `;
+    }
+    
+    // 3. Assemble the page
+    lastPage.appendChild(finalHeader);
+    lastPage.appendChild(footerSummary);
+    lastPage.appendChild(sigContainer);
+    lastPage.appendChild(bottomNote);
+    container.appendChild(lastPage);
+    break;
+}
 
-                    
-                    lastPage.appendChild(finalHeader);
-                    lastPage.appendChild(footerSummary);
-                    lastPage.appendChild(sigContainer);
-                    lastPage.appendChild(bottomNote);
-                    container.appendChild(lastPage);
-                    break;
-                }
             }
         }
     }

@@ -30,12 +30,22 @@ body {
     gap: 5px;
 }
 
+/* --- UPDATED HEADER GRID --- */
 .header-grid { 
     display: grid; 
-    grid-template-columns: 2fr 1fr; 
-    gap: 15px; 
+    /* Change 1fr to 'auto' so the date column doesn't stretch unnecessarily */
+    grid-template-columns: 1fr auto; 
+    gap: 40px; /* Adjust this gap to control the distance between Bill To and Date */
     margin-bottom: 10px; 
+    align-items: flex-end; /* Keeps labels and inputs aligned at the bottom */
 }
+
+/* --- TARGET THE DATE INPUT SPECIFICALLY --- */
+#billDate {
+    width: 140px; /* Forces the date box to a professional size */
+    cursor: pointer;
+}
+
 
 .form-group { margin-bottom: 5px; position: relative; }
 
@@ -107,7 +117,7 @@ input {
 
 .company-name {
     font-size: 18px;
-    font-weight: 800;
+    font-weight: 500;
     color: #222;
     margin: 0 0 5px 0;
     text-transform: uppercase;
@@ -119,7 +129,7 @@ input {
 .header-gap { height: 30px; }
 .doc-title {
     font-size: 22px;
-    font-weight: bold;
+    font-weight: 500;
     text-decoration: underline;
     margin: 0;
     color: #000;
@@ -430,6 +440,13 @@ th { background-color: #f8f9fa; color: #333; text-transform: uppercase; font-siz
     font-size: 12px;
     margin: 5px 0;
     width: 100%;
+}
+@media print {
+    .bill-info-print {
+        display: block !important;
+        text-align: right;
+        font-weight: bold;
+    }
 }
 
 

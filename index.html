@@ -12,7 +12,7 @@
     
     <div class="top-controls no-print">
         <div class="search-group">
-            <input type="text" id="vanSearch" placeholder="by Lyony..." onchange="searchVan()">
+            <input type="text" id="vanSearch" placeholder="design by Yhoda Lyony..." onchange="searchVan()">
             <button class="btn-search" onclick="searchVan()">🔍 Search Van</button>
         </div>
 
@@ -41,19 +41,19 @@
         <div class="company-details">
             <div class="detail-line">NRA, Cebu City</div>
             <div class="detail-line">Non-VAT Reg. TIN: 264-618-743-000</div>
-            <div class="detail-line">cayu.transport@yahoo.com, 8886271/09222946922/01974038971</div>
+            <div class="detail-line">cayu.transport@yahoo.com, 09167318731/09174038971</div>
         </div>
 
         <div class="header-gap"></div>
         <h2 class="doc-title">BILLING STATEMENT</h2>
     </div>
 
-    <hr style="margin-bottom: 20px; border: 0; border-top: 1px solid #ccc;">
+
     
     <div class="header-grid">
         <div class="form-group" style="position: relative;">
             <label>Bill To:</label>
-            <input type="text" id="clientName" autocomplete="off" placeholder="Type to search" oninput="handleClientSearch(this.value)">
+            <input type="text" id="clientName" autocomplete="off" placeholder="Type to search/Create new..." oninput="handleClientSearch(this.value)">
             <div id="suggestionBox" class="suggestions-list"></div>
         </div>
         <div class="form-group">
@@ -73,14 +73,14 @@
             <thead>
                 <tr>
                     <th style="width: 10px;"></th>
-                    <th style="width: 100px;">Van #</th>
-                    <th style="width: 35px;">Size</th>
+                    <th style="width: 100px;" contenteditable="true">Van #</th>
+                    <th style="width: 35px;" contenteditable="true">Size</th>
                     <th style="width: 65px;" contenteditable="true">P-out</th>
                     <th style="width: 65px;" contenteditable="true">Delivery</th>
                     <th style="width: 65px;" contenteditable="true">P-out mt</th>
-                    <th style="width: 110px;">Eir/Tid</th> 
-                    <th style="width: 120px;">Remarks</th> 
-                    <th style="width: 60px;">Amount</th>
+                    <th style="width: 110px;" contenteditable="true">Eir/Tid</th> 
+                    <th style="width: 120px;" contenteditable="true">Remarks</th> 
+                    <th style="width: 60px;" contenteditable="true">Amount</th>
                     <th class="no-print"></th>
                 </tr>
             </thead>
@@ -128,7 +128,7 @@
                 <p>Noted By:</p>
                 <div class="sig-space"></div>
                 <div class="sig-name" contenteditable="true">Nerthus E. Yu Vega</div>
-                <div class="sig-title" contenteditable="true">CAYU Transport</div>
+                <div class="sig-title" contenteditable="true">Cayu Transport</div>
             </div>
         </div>
     </div>
