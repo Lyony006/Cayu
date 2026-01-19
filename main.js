@@ -463,8 +463,8 @@ window.onbeforeprint = function() {
     page1Info.innerHTML = `<div>BILL NO: ${billNoValue}</div>${pageLabelHtml}`;
     page1Header.appendChild(page1Info);
 
-    if (rowCount > 11) {
-        let remainingRows = rows.slice(21); 
+    if (rowCount > 14) {
+        let remainingRows = rows.slice(20); 
         let currentPageNum = 2;
 
         const contNote1 = document.createElement('div');
@@ -581,3 +581,60 @@ window.onafterprint = function() {
     container.appendChild(sigContainer);
     container.appendChild(bottomNote);
 };
+document.addEventListener('DOMContentLoaded', function () {
+    const table = document.getElementById('billingTable');
+    const cols = table.querySelectorAll('th');
+
+    cols.forEach((col) => {
+        const resizer = document.createElement('div');
+        resizer.classList.add('resizer');
+        col.appendChild(resizer);
+
+        let x = 0;
+        let w = 0;
+
+        // Function to handle the start of the drag (Mouse or Touch)
+        const onStart = function (e) {
+            // Get the horizontal position (e.touches[0] for tablet, e.clientX for PC)
+            x = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+            
+            const styles = window.getComputedStyle(col);
+            w = parseInt(styles.width, 10);
+
+            // Listen for movement
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onEnd);
+            document.addEventListener('touchmove', onMove, { passive: false });
+            document.addEventListener('touchend', onEnd);
+            
+            resizer.classList.add('resizing');
+        };
+
+        // Function to handle the movement
+const onMove = function (e) {
+    const currentX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+    const dx = currentX - x;
+    
+    // Set a minimum width (e.g., 30px) so columns don't disappear
+    const newWidth = w + dx;
+    if (newWidth > 30) { 
+        col.style.width = `${newWidth}px`;
+    }
+    
+    if (e.type === 'touchmove') e.preventDefault();
+};
+
+        // Function to stop the drag
+        const onEnd = function () {
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup', onEnd);
+            document.removeEventListener('touchmove', onMove);
+            document.removeEventListener('touchend', onEnd);
+            resizer.classList.remove('resizing');
+        };
+
+        // Attach both event types
+        resizer.addEventListener('mousedown', onStart);
+        resizer.addEventListener('touchstart', onStart);
+    });
+});

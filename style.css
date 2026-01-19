@@ -155,6 +155,7 @@ th { background-color: #f8f9fa; color: #333; text-transform: uppercase; font-siz
     font-size: 12px;
     font-weight: 500;
     margin: 0;
+    align-items: center;
 }
 
 /* --- FOOTER & SIGNATURES --- */
@@ -235,7 +236,123 @@ th { background-color: #f8f9fa; color: #333; text-transform: uppercase; font-siz
 .suggestion-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
 .suggestion-item:hover { background-color: #f0f8ff; }
 
-/* --- OPTIMIZED PRINT STYLES --- */
+/* Hide the cloned header on the website, show only during print */
+.print-header-clone {
+    display: none;
+}
+
+/* Elements for Print Only */
+.print-page-label, .continuation-note {
+    display: none;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+/* Container for Bill info to maintain alignment on both pages */
+.bill-info-print {
+    text-align: right;
+    font-weight: bold;
+    font-size: 14px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    line-height: 1.2;
+}
+
+.print-page-label {
+    display: none;
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.continuation-note {
+    display: none;
+    text-align: center;
+    font-weight: bold;
+    font-style: italic;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px dashed #000;
+}
+
+/* Received by: */
+.received-by-section {
+    margin-top: 40px;
+}
+.received-by {
+    text-align: center;
+    margin-right: 220px;
+}
+.sig-title-received {
+    margin-top: 20px;
+    font-size: 12px;
+    line-height: 1.3;
+    text-align: center;
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+    font-style: italic;
+}
+.sig-space.border-bottom {
+    margin-top: 10px;
+    border-bottom: 1px solid #000;
+}
+.continuation-note {
+    text-align: center;
+    font-style: italic;
+    font-size: 12px;
+    margin: 5px 0;
+    width: 100%;
+}
+
+/* --- SCREEN STYLES (What you see on the tablet) --- */
+.resizable-header {
+    position: relative;
+    padding: 0 !important; /* Ensure the cell itself has no padding */
+}
+
+/* Remove 'resize: horizontal' because we are using the JS 'resizer' instead */
+.resize-wrapper {
+    padding: 5px;
+    min-width: 80px;
+    display: block;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden; 
+}
+    /* Force the Van # border to be solid black */
+#billingTable th, 
+#billingTable td { 
+    border: 1px solid #000 !important; /* Force black borders to stay visible */
+    padding: 5px 3px; 
+    text-align: left; 
+    font-size: 13px; 
+    position: relative; /* Allows the resizer to anchor to the right edge */
+    overflow: hidden; 
+    word-wrap: break-word;
+}
+
+/* Background for the header row */
+#billingTable th {
+    background-color: #f8f9fa;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+.resizer {
+    position: absolute;
+    top: 0;
+    right: 0; 
+    width: 20px; /* Large hit-area for touch/mouse */
+    cursor: col-resize;
+    user-select: none;
+    height: 100%;
+    z-index: 10;
+    background: transparent; 
+}
+
+/* Shows where the border is moving while you drag */
+.resizer:hover, .resizer.resizing {
+    border-right: 3px solid #007bff; 
+}
 @media print {
     @page {
         size: letter;
@@ -265,8 +382,8 @@ th { background-color: #f8f9fa; color: #333; text-transform: uppercase; font-siz
     .sig-space { height: 5px !important; }
 
     .bottom-note { 
-        margin-top: 8px !important; /* Reduced from 30px */
-        font-size: 8.5pt !important;
+        margin-top: 10px !important; /* Reduced from 30px */
+        font-size: 9pt !important;
         line-height: 1.1 !important;
         border-top: 1px solid #000 !important;
     }
@@ -277,13 +394,6 @@ th { background-color: #f8f9fa; color: #333; text-transform: uppercase; font-siz
     }
 
     input { border: none !important; background: transparent !important; }
-}
-/* Hide the cloned header on the website, show only during print */
-.print-header-clone {
-    display: none;
-}
-
-@media print {
     /* Class to force an element to the next page */
     .force-page-break {
         display: block;
@@ -302,15 +412,6 @@ th { background-color: #f8f9fa; color: #333; text-transform: uppercase; font-siz
 
     /* Avoid splitting a single row across two pages */
     tr { page-break-inside: avoid; }
-}
-/* Elements for Print Only */
-.print-page-label, .continuation-note {
-    display: none;
-    font-weight: bold;
-    font-size: 12px;
-}
-
-@media print {
     .print-page-label {
         display: block !important;
         text-align: right;
@@ -325,35 +426,6 @@ th { background-color: #f8f9fa; color: #333; text-transform: uppercase; font-siz
         border-top: 1px dashed #000;
         padding-top: 10px;
     }
-}
-/* Container for Bill info to maintain alignment on both pages */
-.bill-info-print {
-    text-align: right;
-    font-weight: bold;
-    font-size: 14px;
-    position: absolute;
-    right: 0;
-    top: 0;
-    line-height: 1.2;
-}
-
-.print-page-label {
-    display: none;
-    font-size: 12px;
-    margin-top: 2px;
-}
-
-.continuation-note {
-    display: none;
-    text-align: center;
-    font-weight: bold;
-    font-style: italic;
-    margin-top: 15px;
-    padding-top: 10px;
-    border-top: 1px dashed #000;
-}
-
-@media print {
     .print-page-label, .continuation-note {
         display: block !important;
     }
@@ -366,8 +438,6 @@ th { background-color: #f8f9fa; color: #333; text-transform: uppercase; font-siz
         position: relative;
         margin-bottom: 20px;
     }
-}
-@media print {
     /* Hide the original BILL NO label and input from the web view */
     .bill-no-container {
         display: none !important;
@@ -379,29 +449,6 @@ th { background-color: #f8f9fa; color: #333; text-transform: uppercase; font-siz
         top: 10px !important;
         right: 10px !important;
     }
-}
-/* Received by: */
-.received-by-section {
-    margin-top: 40px;
-}
-.received-by {
-    text-align: center;
-    margin-right: 220px;
-}
-.sig-title-received {
-    margin-top: 20px;
-    font-size: 12px;
-    line-height: 1.3;
-    text-align: center;
-    border-top: 1px solid #ccc;
-    padding-top: 10px;
-    font-style: italic;
-}
-.sig-space.border-bottom {
-    margin-top: 10px;
-    border-bottom: 1px solid #000;
-}
-@media print {
     /* 1. Force the background for the specific "DETAILS" header */
     .table-details {
         background-color: #eee !important;
@@ -434,19 +481,3 @@ th { background-color: #f8f9fa; color: #333; text-transform: uppercase; font-siz
         border: 1px solid #000 !important;
     }
 }
-.continuation-note {
-    text-align: center;
-    font-style: italic;
-    font-size: 12px;
-    margin: 5px 0;
-    width: 100%;
-}
-@media print {
-    .bill-info-print {
-        display: block !important;
-        text-align: right;
-        font-weight: bold;
-    }
-}
-
-
