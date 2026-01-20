@@ -464,7 +464,7 @@ window.onbeforeprint = function() {
     page1Header.appendChild(page1Info);
 
     if (rowCount > 14) {
-        let remainingRows = rows.slice(20); 
+        let remainingRows = rows.slice(24); 
         let currentPageNum = 2;
 
         const contNote1 = document.createElement('div');
@@ -487,8 +487,8 @@ window.onbeforeprint = function() {
             
             pageDiv.appendChild(clonedHeader);
 
-            const moveFooterThreshold = 14;
-            const maxCapacity = 26;
+            const moveFooterThreshold = 18;
+            const maxCapacity = 28;
             
             let sliceSize = (remainingRows.length > moveFooterThreshold) ? maxCapacity : remainingRows.length;
             const pageRows = remainingRows.splice(0, sliceSize);
