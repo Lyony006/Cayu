@@ -463,8 +463,8 @@ window.onbeforeprint = function() {
     page1Info.innerHTML = `<div>BILL NO: ${billNoValue}</div>${pageLabelHtml}`;
     page1Header.appendChild(page1Info);
 
-    if (rowCount > 14) {
-        let remainingRows = rows.slice(24); 
+    if (rowCount > 10) {
+        let remainingRows = rows.slice(22); 
         let currentPageNum = 2;
 
         const contNote1 = document.createElement('div');
