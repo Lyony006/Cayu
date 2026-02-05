@@ -487,8 +487,8 @@ window.onbeforeprint = function() {
             
             pageDiv.appendChild(clonedHeader);
 
-            const moveFooterThreshold = 18;
-            const maxCapacity = 28;
+            const moveFooterThreshold = 14;
+            const maxCapacity = 26;
             
             let sliceSize = (remainingRows.length > moveFooterThreshold) ? maxCapacity : remainingRows.length;
             const pageRows = remainingRows.splice(0, sliceSize);
