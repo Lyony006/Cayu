@@ -464,7 +464,7 @@ window.onbeforeprint = function() {
     page1Header.appendChild(page1Info);
 
     if (rowCount > 10) {
-        let remainingRows = rows.slice(22); 
+        let remainingRows = rows.slice(20); 
         let currentPageNum = 2;
 
         const contNote1 = document.createElement('div');
