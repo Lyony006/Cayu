@@ -47,7 +47,36 @@ body {
 }
 
 
-.form-group { margin-bottom: 5px; position: relative; }
+/* --- UPDATED FORM GROUP FOR ALIGNMENT --- */
+.form-group { 
+    margin-bottom: 8px; 
+    position: relative; 
+    display: flex;       /* Put label and input in a row */
+    align-items: center; /* Center them vertically */
+}
+
+.form-group label { 
+    font-weight: bold; 
+    display: inline-block; 
+    margin-bottom: 0;   /* Remove bottom margin to keep it level */
+    font-size: 14px; 
+    white-space: nowrap; /* Prevent "Bill To" from wrapping */
+    width: 80px;        /* Fixed width so all colons line up vertically */
+    flex-shrink: 0;     /* Keeps the label from squishing */
+}
+
+.form-group input { 
+    flex: 1;            /* Input takes up the rest of the available space */
+    padding: 8px; 
+    box-sizing: border-box; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+}
+
+/* Specific adjustment for the Date field in the grid */
+.header-grid .form-group {
+    margin-bottom: 0;   /* Clean up spacing inside the grid */
+}
 
 label { font-weight: bold; display: block; margin-bottom: 5px; font-size: 14px; }
 
@@ -127,16 +156,18 @@ input {
 .company-details { color: #555; font-size: 14px; }
 .detail-line { margin: 2px 0; line-height: 1.0; }
 .header-gap { height: 30px; }
+/* --- DOCUMENT TITLE SPACING --- */
 .doc-title {
     font-size: 22px;
     font-weight: 500;
     text-decoration: underline;
-    margin: 0;
+    margin: 0 0 25px 0; /* Changed 0 to 25px on the bottom */
     color: #000;
 }
 
+
 /* --- TABLE STYLES --- */
-.table-wrapper { overflow-x: auto; margin-bottom: 15px; }
+.table-wrapper { overflow-x: auto; margin-bottom: 5px; }
 table { width: 100%; border-collapse: collapse; margin-top: 5px; }
 th, td { border: 1px solid #ddd; padding: 5px; text-align: left; font-size: 13px; }
 th { background-color: #f8f9fa; color: #333; text-transform: uppercase; font-size: 12px; }
@@ -145,21 +176,31 @@ th { background-color: #f8f9fa; color: #333; text-transform: uppercase; font-siz
     border: none; 
     background: transparent; 
     width: 100%; 
-    padding: 4px; 
-    font-size: 12px;
+    padding: 1px; 
+    font-size: 14px;
     font-family: inherit;
 }
 
 .table-details {
-    background-color: #eee;
-    font-size: 12px;
-    font-weight: 500;
-    margin: 0;
-    align-items: center;
+    background-color: #eee !important; /* Gray bar */
+    font-size: 13px;
+    font-weight: bold;
+    margin-top: 20px;     /* Space above the bar */
+    margin-bottom: 5px;   /* Space below the bar */
+    padding: 6px;         /* Height of the bar */
+    text-align: center;   /* CENTERS THE TEXT */
+    text-transform: uppercase;
+    width: 100%;
+    box-sizing: border-box;
+    display: block;
+    /* Forces gray color in Chrome/Edge/Safari PDF saves */
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
 }
 
+
 /* --- FOOTER & SIGNATURES --- */
-.total-display { text-align: right; margin-top: 15px; font-size: 12px; padding-top: 8px; }
+.total-display { text-align: right; margin-top: 2px; font-size: 15px; padding-top: 2px; }
 
 .signatures-container {
     margin-top: 30px;
@@ -196,9 +237,10 @@ th { background-color: #f8f9fa; color: #333; text-transform: uppercase; font-siz
 .total-words {
     font-weight: bold;
     font-style: italic;
+    font-size: 13px;
     width: 100%;
     max-width: 450px;
-    line-height: 1.3;
+    line-height: 1.3px;
     word-wrap: break-word;
     margin-bottom: 10px;
 }
@@ -307,10 +349,9 @@ th { background-color: #f8f9fa; color: #333; text-transform: uppercase; font-siz
 /* --- SCREEN STYLES (What you see on the tablet) --- */
 .resizable-header {
     position: relative;
-    padding: 0 !important; /* Ensure the cell itself has no padding */
+    padding: 0 !important; 
 }
 
-/* Remove 'resize: horizontal' because we are using the JS 'resizer' instead */
 .resize-wrapper {
     padding: 5px;
     min-width: 80px;
@@ -319,29 +360,36 @@ th { background-color: #f8f9fa; color: #333; text-transform: uppercase; font-siz
     white-space: nowrap;
     overflow: hidden; 
 }
-    /* Force the Van # border to be solid black */
+
+/* UPDATED: Added .billing-table-print to ensure cloned tables look sharp */
 #billingTable th, 
-#billingTable td { 
-    border: 1px solid #000 !important; /* Force black borders to stay visible */
+#billingTable td,
+.billing-table-print th,
+.billing-table-print td { 
+    border: 1px solid #000 !important; 
     padding: 5px 3px; 
     text-align: left; 
     font-size: 13px; 
-    position: relative; /* Allows the resizer to anchor to the right edge */
+    position: relative; 
     overflow: hidden; 
     word-wrap: break-word;
 }
 
-/* Background for the header row */
-#billingTable th {
-    background-color: #f8f9fa;
+/* UPDATED: Added .billing-table-print for header background */
+#billingTable th,
+.billing-table-print th {
+    background-color: #f8f9fa !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
     text-transform: uppercase;
     font-size: 12px;
 }
+
 .resizer {
     position: absolute;
     top: 0;
     right: 0; 
-    width: 20px; /* Large hit-area for touch/mouse */
+    width: 20px; 
     cursor: col-resize;
     user-select: none;
     height: 100%;
@@ -349,14 +397,22 @@ th { background-color: #f8f9fa; color: #333; text-transform: uppercase; font-siz
     background: transparent; 
 }
 
-/* Shows where the border is moving while you drag */
 .resizer:hover, .resizer.resizing {
     border-right: 3px solid #007bff; 
 }
+
 @media print {
+    /* Tighten the cloned header specifically */
+    .print-header-clone .doc-title {
+        margin-bottom: 5px !important;
+    }
+    .print-header-clone .table-details {
+        margin-top: 0px !important;
+    }
+    
     @page {
         size: letter;
-        margin: 0.4in; /* Maximum use of paper height */
+        margin: 0.4in; 
     }
 
     .no-print, .top-controls, .button-row, #editControls, 
@@ -364,54 +420,66 @@ th { background-color: #f8f9fa; color: #333; text-transform: uppercase; font-siz
         display: none !important; 
     }
 
-    body { background-color: white; padding: 0; }
-    .container { width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; }
+    body { 
+        background-color: white; 
+        padding: 0; 
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
 
-    /* The "Squeeze" - Reducing vertical gaps */
+    .container { 
+        width: 100% !important; 
+        max-width: 100% !important; 
+        margin: 0 !important; 
+        padding: 0 !important; 
+        box-shadow: none !important; 
+    }
+
     .header-gap { height: 0px !important; }
     .letterhead { margin-bottom: 5px !important; }
     .company-logo { max-width: 80px !important; margin-bottom: 5px !important; }
     
-    #billingTable th, #billingTable td {
-        padding: 3px 4px !important; /* Thinner rows to fit more data */
+    /* Ensure rows are tight and borders are solid black on all pages */
+    #billingTable th, #billingTable td,
+    .billing-table-print th, .billing-table-print td {
+        padding: 3px 4px !important; 
         border: 1px solid #000 !important;
     }
 
-    .signatures-container { margin-top: 10px !important; } /* Reduced from 30px */
-    .sig-row { margin-bottom: 5px !important; } /* Reduced from 20px */
+    .signatures-container { margin-top: 10px !important; } 
+    .sig-row { margin-bottom: 5px !important; } 
     .sig-space { height: 5px !important; }
 
     .bottom-note { 
-        margin-top: 10px !important; /* Reduced from 30px */
+        margin-top: 10px !important; 
         font-size: 9pt !important;
         line-height: 1.1 !important;
         border-top: 1px solid #000 !important;
     }
 
-    /* Keep footer together */
     .signatures-container, .bottom-note {
         page-break-inside: avoid !important;
     }
 
     input { border: none !important; background: transparent !important; }
-    /* Class to force an element to the next page */
+
     .force-page-break {
         display: block;
         page-break-before: always !important;
         margin-top: 20px;
     }
 
-    /* Show the cloned header on Page 2 */
     .print-header-clone {
         display: flex !important;
         flex-direction: column;
         align-items: center;
         text-align: center;
         margin-bottom: 20px;
+        position: relative;
     }
 
-    /* Avoid splitting a single row across two pages */
     tr { page-break-inside: avoid; }
+    
     .print-page-label {
         display: block !important;
         text-align: right;
@@ -426,58 +494,154 @@ th { background-color: #f8f9fa; color: #333; text-transform: uppercase; font-siz
         border-top: 1px dashed #000;
         padding-top: 10px;
     }
-    .print-page-label, .continuation-note {
-        display: block !important;
-    }
-    
-    /* Ensure the cloned header looks identical to the original */
-    .print-header-clone {
-        display: flex !important;
-        flex-direction: column;
-        align-items: center;
-        position: relative;
-        margin-bottom: 20px;
-    }
-    /* Hide the original BILL NO label and input from the web view */
+
     .bill-no-container {
         display: none !important;
     }
 
-    /* Adjust the print-specific container to be slightly lower 
-       to avoid overlapping with the top of the page */
     .bill-info-print {
         top: 10px !important;
         right: 10px !important;
     }
-    /* 1. Force the background for the specific "DETAILS" header */
+
+    /* Force background for "DETAILS" header */
     .table-details {
         background-color: #eee !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+        width: 100%;
+        text-align: center;
+        font-weight: bold;
+        padding: 5px 0;
     }
 
-    /* 2. Target the table rows specifically inside the cloned container */
-    #temp-print-page-2 table tr, 
-    #billingTable tr {
+    /* Zebra stripes for all tables (Original and Clones) */
+    #billingTable tbody tr:nth-child(even),
+    .billing-table-print tbody tr:nth-child(even) {
+        background-color: #f9f9f9 !important;
         -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
     }
+}
 
-    /* 3. If you want alternating colors (zebra stripes) to work on Page 2 */
-    #temp-print-page-2 table tbody tr:nth-child(odd),
-    #billingTable tbody tr:nth-child(odd) {
-        background-color: #ffffff !important;
-    }
+/* Footer summary styling */
+.footer-summary-container {
+    display: flex;
+    justify-content: space-between; 
+    align-items: flex-end;
+    margin-top: 20px;
+    padding: 0 10px;
+}
 
-    #temp-print-page-2 table tbody tr:nth-child(even),
-    #billingTable tbody tr:nth-child(even) {
-        background-color: #f9f9f9 !important; /* Light gray for even rows */
-    }
+.bank-details {
+    text-align: left;
+    font-size: 13px; 
+    line-height: 1.4;
+}
 
-    /* 4. Ensure borders are solid black on both pages */
-    #temp-print-page-2 table, 
-    #temp-print-page-2 th, 
-    #temp-print-page-2 td {
-        border: 1px solid #000 !important;
-    }
+.bank-header {
+    font-weight: bold;
+    text-decoration: underline;
+    margin-bottom: 4px;
+}
+
+.footer-summary {
+    text-align: right;
+}
+
+.total-words {
+    font-style: italic;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.placeholder-text {
+    color: #666;
+}
+
+/* Auth Gate Styles */
+#auth-gate {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #ffffff; /* White background like the image */
+
+    background-size: 100% 200px;
+    background-repeat: no-repeat;
+    z-index: 9999; /* Stay on top */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    transition: opacity 0.5s ease;
+}
+
+.gate-content {
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+}
+
+.gate-logo { width: 220px; }
+.gate-title { 
+    letter-spacing: 5px; 
+    font-size: 1.5rem; 
+    margin-bottom: 30px; 
+    color: #000;
+}
+
+.login-card {
+    background-color: #438e34;
+    padding: 30px 20px;
+    border-radius: 25px;
+    color: white;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.login-card h2 {
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+    line-height: 1.4;
+}
+
+.login-card input {
+    width: 80%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 25px;
+    border: none;
+    text-align: center;
+    font-weight: bold;
+    color: #888;
+}
+
+.instruction {
+    font-size: 0.8rem;
+    margin-top: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+#confirmBtn {
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+    padding: 10px 30px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+#confirmBtn:hover {
+    background: white;
+    color: #438e34;
+}
+
+.credit {
+    margin-top: 40px;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    font-weight: bold;
 }

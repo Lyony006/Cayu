@@ -1,3 +1,52 @@
+// 1. Check if user is already "Remembered" as soon as the page loads
+window.onload = function() {
+    if (localStorage.getItem("cayu_authorized") === "true") {
+        document.getElementById('auth-gate').style.display = "none";
+    }
+};
+
+function checkAccess() {
+    const passField = document.getElementById('passInput');
+    const webKeyContainer = document.getElementById('web-key-container');
+    const authGate = document.getElementById('auth-gate');
+    const rememberMe = document.getElementById('rememberMe');
+    
+    const correctPassword = "12"; 
+
+    if (passField.value === correctPassword) {
+        // If "Remember Me" is checked, save to localStorage
+        if (rememberMe.checked) {
+            localStorage.setItem("cayu_authorized", "true");
+        }
+
+        // Smooth Fade Out
+        authGate.style.opacity = "0";
+        setTimeout(() => {
+            authGate.style.display = "none";
+        }, 500);
+    } else {
+        // Wrong password logic
+        alert("Incorrect Key.");
+        webKeyContainer.style.display = "block";
+        passField.value = ""; 
+        
+        // Optional: Shake effect
+        const card = document.querySelector('.login-card');
+        card.style.transform = "translateX(10px)";
+        setTimeout(() => card.style.transform = "translateX(-10px)", 100);
+        setTimeout(() => card.style.transform = "translateX(0)", 200);
+    }
+}
+
+// Allow pressing "Enter" to submit
+document.addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        if(document.getElementById('auth-gate').style.display !== "none") {
+            checkAccess();
+        }
+    }
+});
+
 // --- STORAGE & STATE ---
 const STORAGE_KEY = 'billing_db_v2';
 let currentEditingId = null;
@@ -44,6 +93,7 @@ function addRow(data = {}) {
         <td><input type="text" class="tbl-input del" value="${data.del || ''}"></td>
         <td><input type="text" class="tbl-input p_mt" value="${data.p_mt || ''}"></td>
         <td><input type="text" class="tbl-input eir" value="${data.eir || ''}"></td>
+        <td><input type="text" class="tbl-input cy mt rtrn" value="${data.cymrtrn || ''}"></td>
         <td><input type="text" class="tbl-input remarks" value="${data.remarks || ''}"></td>
         <td><input type="text" step="0.01" class="tbl-input amt" value="${data.amt || ''}" onchange="formatAmount(this)"></td>
         <td class="no-print" style="text-align:center;">
@@ -63,7 +113,7 @@ function addFeeRow(data = {}) {
     // Added an empty <td> at the start to keep alignment
     tr.innerHTML = `
         <td></td> 
-        <td colspan="6">
+        <td colspan="7">
             <input type="text" class="tbl-input fee-description" 
                    style="width: 100%; " 
                    placeholder="Enter fee description..." 
@@ -145,33 +195,42 @@ function closeBillList() {
 
 // --- UTILS ---
 // This cleans the input for calculation
-function parseValue(val) {
-    if (typeof val === 'number') return val;
-    // Remove commas so parseFloat can read it correctly
-    return parseFloat(val.replace(/,/g, '')) || 0;
+function parseValue(value) {
+    // Remove commas and then turn into a floating point number
+    let cleanValue = value.replace(/,/g, '');
+    let num = parseFloat(cleanValue);
+    return isNaN(num) ? 0 : num;
 }
+
 
 // This adds the commas automatically
 function formatAmount(input) {
-    // 1. Get the raw number (remove existing commas)
+    // 1. Get the raw value and remove existing commas
     let rawValue = input.value.replace(/,/g, '');
-    let number = Math.floor(parseFloat(rawValue));
+    
+    // 2. Convert to a number
+    let number = parseFloat(rawValue);
 
-    // 2. If it's a valid number, format it
+    // 3. If it's a valid number, format it with commas and 2 decimals
     if (!isNaN(number)) {
-        // Formats to "2,000" without decimals
-        input.value = number.toLocaleString('en-US');
+        input.value = number.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
     }
 }
+
+
 
 // --- IMPROVED CALC TOTAL ---
 function calcTotal() {
     let total = 0;
+    // Select all your amount fields
     document.querySelectorAll('.amt').forEach(field => {
-        // FIX: Use parseValue instead of parseFloat
         total += parseValue(field.value); 
     });
 
+    // Update the Numeric Display (e.g., 13,900.00)
     const display = document.getElementById('grandTotal');
     if(display) {
         display.innerText = total.toLocaleString('en-US', {
@@ -180,11 +239,13 @@ function calcTotal() {
         });
     }
 
+    // Update the Words (e.g., Thirteen Thousand Pesos & 50/100 Only)
     const totalWordsDiv = document.querySelector('.total-words');
     if (totalWordsDiv) {
         totalWordsDiv.innerText = numberToEnglish(total);
     }
 }
+
 
 
 // --- SMART SAVE LOGIC ---
@@ -398,6 +459,10 @@ function deleteRecord() {
 function numberToEnglish(n) {
     if (n === 0) return "Zero Pesos Only";
     
+    // 1. Separate Whole Number and Centavos
+    const integerPart = Math.floor(n);
+    const cents = Math.round((n - integerPart) * 100); // Standard way to get 2-digit cents
+
     const units = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
     const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
     const scales = ["", "Thousand", "Million"];
@@ -420,18 +485,28 @@ function numberToEnglish(n) {
 
     let words = "";
     let scaleIndex = 0;
-    let integerPart = Math.floor(n);
+    let tempInteger = integerPart;
 
-    while (integerPart > 0) {
-        let chunk = integerPart % 1000;
+    // 2. Process the Pesos (Integer Part)
+    while (tempInteger > 0) {
+        let chunk = tempInteger % 1000;
         if (chunk > 0) {
-            words = chunkToWords(chunk) + scales[scaleIndex] + " " + words;
+            words = chunkToWords(chunk) + (scales[scaleIndex] ? scales[scaleIndex] + " " : "") + words;
         }
-        integerPart = Math.floor(integerPart / 1000);
+        tempInteger = Math.floor(tempInteger / 1000);
         scaleIndex++;
     }
 
-    return words.trim() + " Pesos Only";
+    words = words.trim();
+
+    // 3. Combine Pesos and Centavos
+    if (cents > 0) {
+        // Example: "One Thousand Two Hundred Pesos & 50/100 Only"
+        return `${words} Pesos & ${cents} Centavos Only`;
+    } else {
+        // Example: "One Thousand Two Hundred Pesos Only"
+        return `${words} Pesos Only`;
+    }
 }
 
 function printBill() { window.print(); }
@@ -449,57 +524,91 @@ window.onbeforeprint = function() {
     
     const billNoValue = document.getElementById('billNoInput')?.value || "XXXX-XX";
     const container = document.querySelector('.container');
-    const footerSummary = document.querySelector('.footer-summary');
+    const footerSummary = document.querySelector('.footer-summary-container');
     const sigContainer = document.querySelector('.signatures-container');
     const bottomNote = document.querySelector('.bottom-note');
     const page1Header = document.querySelector('.letterhead');
 
-    // 1. Setup Page 1 Header
-    // We add a class to the info div so we can easily find it in clones
+    // --- STEP 1: CALCULATE TOTAL PAGES ---
+    let totalPages = 1;
+    const p1Limit = 20;         
+    const p1Threshold = 10;     
+    const pnLimit = 25;         
+    const pnThreshold = 14;     
+
+    if (rowCount <= p1Threshold) {
+        totalPages = 1;
+    } else if (rowCount <= p1Limit) {
+        totalPages = 2;
+    } else {
+        totalPages = 2; 
+        let remaining = rowCount - p1Limit;
+        while (remaining > 0) {
+            if (remaining <= pnThreshold) { remaining = 0; }
+            else if (remaining <= pnLimit) { totalPages += 1; remaining = 0; }
+            else { totalPages += 1; remaining -= pnLimit; }
+        }
+    }
+
+    // --- STEP 2: SETUP PAGE 1 LABEL ---
     const page1Info = document.createElement('div');
     page1Info.id = 'temp-page1-info';
     page1Info.className = 'bill-info-print'; 
-    const pageLabelHtml = (rowCount > 10) ? `<div class="print-page-label">Page 1</div>` : '';
-    page1Info.innerHTML = `<div>BILL NO: ${billNoValue}</div>${pageLabelHtml}`;
+    page1Info.innerHTML = `
+        <div>BILL NO: ${billNoValue}</div>
+        <div class="print-page-label">Page 1 of ${totalPages}</div>
+    `;
     page1Header.appendChild(page1Info);
 
-    if (rowCount > 10) {
-        let remainingRows = rows.slice(20); 
+    // --- STEP 3: GENERATE SUBSEQUENT PAGES ---
+    if (rowCount > p1Threshold) {
+        let remainingRows = rows.slice(p1Limit); 
         let currentPageNum = 2;
 
         const contNote1 = document.createElement('div');
         contNote1.id = 'temp-cont-note-1';
         contNote1.className = 'continuation-note';
-        contNote1.innerText = `*** Continuation on Page 2 ***`;
+        contNote1.innerText = `*** Continuation on Page ${currentPageNum} ***`;
         container.insertBefore(contNote1, footerSummary);
 
         while (true) {
             const pageDiv = document.createElement('div');
             pageDiv.className = 'force-page-break temp-print-page';
             
-            // --- HEADER CLONING ---
+            // 1. Clone Header
             const clonedHeader = page1Header.cloneNode(true);
             clonedHeader.classList.add('print-header-clone');
             
-            // UPDATE LABEL IN CLONE
-            const clonedLabel = clonedHeader.querySelector('.print-page-label');
-            if (clonedLabel) clonedLabel.innerText = `Page ${currentPageNum}`;
+            // 2. Ensure Bill No and Page Label exist in this clone
+            let clonedInfo = clonedHeader.querySelector('.bill-info-print');
+            if (!clonedInfo) {
+                clonedInfo = document.createElement('div');
+                clonedInfo.className = 'bill-info-print';
+                clonedHeader.appendChild(clonedInfo);
+            }
+            clonedInfo.innerHTML = `
+                <div>BILL NO: ${billNoValue}</div>
+                <div class="print-page-label">Page ${currentPageNum} of ${totalPages}</div>
+            `;
             
             pageDiv.appendChild(clonedHeader);
 
-            const moveFooterThreshold = 14;
-            const maxCapacity = 25;
-            
-            let sliceSize = (remainingRows.length > moveFooterThreshold) ? maxCapacity : remainingRows.length;
+            // 3. Re-add "DETAILS (CONTINUED)"
+            const originalDetails = document.querySelector('.table-details');
+            if (originalDetails) {
+                const clonedDetails = originalDetails.cloneNode(true);
+                clonedDetails.innerText = "DETAILS (CONTINUED)"; 
+                pageDiv.appendChild(clonedDetails);
+            }
+
+            // 4. Calculate rows for THIS page
+            let sliceSize = (remainingRows.length > pnThreshold) ? pnLimit : remainingRows.length;
             const pageRows = remainingRows.splice(0, sliceSize);
 
-            // Table Logic
             if (pageRows.length > 0) {
                 const originalTable = document.getElementById('billingTable');
                 const newTable = document.createElement('table');
-                newTable.id = 'billingTable'; 
-                newTable.className = originalTable.className;
-                newTable.style.cssText = originalTable.style.cssText;
+                newTable.className = originalTable.className + " billing-table-print"; 
                 newTable.appendChild(originalTable.querySelector('thead').cloneNode(true));
                 const newTbody = document.createElement('tbody');
                 pageRows.forEach(row => newTbody.appendChild(row));
@@ -507,55 +616,54 @@ window.onbeforeprint = function() {
                 pageDiv.appendChild(newTable);
             }
 
-            // --- FOOTER PLACEMENT ---
-            if (remainingRows.length === 0 && pageRows.length <= moveFooterThreshold) {
+            // 5. DECISION LOGIC: Finish or Continue?
+            if (remainingRows.length === 0 && pageRows.length <= pnThreshold) {
                 pageDiv.appendChild(footerSummary);
                 pageDiv.appendChild(sigContainer);
                 pageDiv.appendChild(bottomNote);
                 container.appendChild(pageDiv);
                 break; 
             } else {
+                const nextP = currentPageNum + 1;
                 const midContNote = document.createElement('div');
                 midContNote.className = 'continuation-note';
-                midContNote.innerText = `*** Continuation on Page ${currentPageNum + 1} ***`;
+                midContNote.innerText = `*** Continuation on Page ${nextP} ***`;
                 pageDiv.appendChild(midContNote);
                 container.appendChild(pageDiv);
 
                 currentPageNum++;
 
-if (remainingRows.length === 0) {
-    // THIS IS PAGE 3 (OR THE FINAL FOOTER-ONLY PAGE)
-    const lastPage = document.createElement('div');
-    lastPage.className = 'force-page-break temp-print-page';
-    
-    // 1. RE-CLONE HEADER
-    const finalHeader = page1Header.cloneNode(true);
-    finalHeader.classList.add('print-header-clone');
-    
-    // 2. FIX: Manually find the info div inside this specific clone
-    // We use querySelector on 'finalHeader' to ensure we touch only this page's header
-    const finalInfo = finalHeader.querySelector('.bill-info-print');
-    
-    if (finalInfo) {
-        const finalPageNum = currentPageNum; // Increment to Page 3
-        finalInfo.innerHTML = `
-            <div>BILL NO: ${billNoValue}</div>
-            <div class="print-page-label">Page ${finalPageNum}</div>
-        `;
-    }
-    
-    // 3. Assemble the page
-    lastPage.appendChild(finalHeader);
-    lastPage.appendChild(footerSummary);
-    lastPage.appendChild(sigContainer);
-    lastPage.appendChild(bottomNote);
-    container.appendChild(lastPage);
-    break;
-}
-
+                // --- FINAL PAGE FIX (When only signatures remain) ---
+                if (remainingRows.length === 0) {
+                    const finalPage = document.createElement('div');
+                    finalPage.className = 'force-page-break temp-print-page';
+                    
+                    const finalHeader = page1Header.cloneNode(true);
+                    finalHeader.classList.add('print-header-clone');
+                    
+                    // Force the Bill Info into the final page header
+                    let finalInfo = finalHeader.querySelector('.bill-info-print');
+                    if (!finalInfo) {
+                        finalInfo = document.createElement('div');
+                        finalInfo.className = 'bill-info-print';
+                        finalHeader.appendChild(finalInfo);
+                    }
+                    finalInfo.innerHTML = `
+                        <div>BILL NO: ${billNoValue}</div>
+                        <div class="print-page-label">Page ${currentPageNum} of ${totalPages}</div>
+                    `;
+                    
+                    finalPage.appendChild(finalHeader);
+                    finalPage.appendChild(footerSummary);
+                    finalPage.appendChild(sigContainer);
+                    finalPage.appendChild(bottomNote);
+                    container.appendChild(finalPage);
+                    break;
+                }
             }
         }
     }
+
 };
 
 window.onafterprint = function() {
@@ -564,7 +672,7 @@ window.onafterprint = function() {
     const contNote1 = document.getElementById('temp-cont-note-1');
     const tableBody = document.getElementById('tableBody');
     const container = document.querySelector('.container');
-    const footerSummary = document.querySelector('.footer-summary');
+    const footerSummary = document.querySelector('.footer-summary-container');
     const sigContainer = document.querySelector('.signatures-container');
     const bottomNote = document.querySelector('.bottom-note');
 

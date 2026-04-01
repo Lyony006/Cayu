@@ -7,18 +7,48 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div id="auth-gate">
+    <div class="gate-content">
+        <div class="gate-header">
+            <img src="logo2.png" alt="CAYU Logo" class="gate-logo">
+            <h1 class="gate-title">CAYU TRANSPORT</h1>
+        </div>
+
+<div class="login-card">
+    <h2>ARE YOU AUTHORIZED TO USE THIS WEBSITE?</h2>
+    
+    <input type="password" id="passInput" placeholder="ENTER WEB KEY (e.g WQSX)">
+    
+    <div id="web-key-container" style="display: none;">
+        <input type="text" id="webKeyInput" placeholder="ENTER AUTHORIZATION CODE">
+    </div>
+
+    <div style="margin: 10px 0; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <input type="checkbox" id="rememberMe" style="width: 15px; margin: 0; cursor: pointer;">
+        <label for="rememberMe" style="cursor: pointer;">Remember Me</label>
+    </div>
+
+    <p class="instruction">CONFIRM BY ENTERING THE WEB KEY ISSUED TO YOU</p>
+    
+    <button onclick="checkAccess()" id="confirmBtn">CONFIRM</button>
+</div>
+
+
+        <p class="credit">PROGRAMMED BY YHODA LYONY</p>
+    </div>
+</div>
 
 <div class="container">
     
     <div class="top-controls no-print">
         <div class="search-group">
-            <input type="text" id="vanSearch" placeholder="design by Yhoda Lyony..." onchange="searchVan()">
-            <button class="btn-search" onclick="searchVan()">🔍 Search Van</button>
+            <input type="text" id="vanSearch" placeholder="Programmed by Yhoda Lyony" onchange="searchVan()">
+            <button class="btn-search" onclick="searchVan()">✤</button>
         </div>
 
         <div class="list-group">
             <input type="number" id="yearFilter" placeholder="Year" value="2026" class="year-input">
-            <button class="btn-list" onclick="openBillList()">📂 Bill List</button>
+            <button class="btn-list" onclick="openBillList()">LIST OF BILLS</button>
         </div>
     </div>
 
@@ -36,7 +66,7 @@
     </div>
     
     <div class="letterhead">
-        <img src="logo.png" alt="Company Logo" class="company-logo">
+        <img src="logo2.png" alt="Company Logo" class="company-logo">
         <h1 class="company-name">CAYU TRANSPORT</h1>
         <div class="company-details">
             <div class="detail-line">NRA, Cebu City</div>
@@ -78,10 +108,11 @@
         <th class="resizable-header" style="width: 80px;" contenteditable="true">P-out</th>
         <th class="resizable-header" style="width: 80px;" contenteditable="true">Delivery</th>
         <th class="resizable-header" style="width: 80px;" contenteditable="true">P-out mt</th>
-        <th class="resizable-header" style="width: 100px;" contenteditable="true">Eir/Tid</th> 
+        <th class="resizable-header" style="width: 100px;" contenteditable="true">Eir/Tid</th>
+        <th class="resizable-header" style="width: 50px" contenteditable="true">Cy MT Ret</th>
         <th class="resizable-header" style="width: 150px;" contenteditable="true">Remarks</th> 
-        <th class="resizable-header" style="width: 55px;">Amount</th>
-        <th class="no-print" style="width: 10px;"></th>
+        <th class="resizable-header" style="width: 60px;">Amount</th>
+        <th class="no-print" style="width: 5px;"></th>
     </tr>
 </thead>
 
@@ -101,10 +132,21 @@
         <button class="btn" style="background-color: #6610f2; color: white;" onclick="printBill()">🖨️ Print Bill</button>
         <button class="btn" style="background-color: #dc3545; color: white;" onclick="deleteRecord()">🗑️ Delete Permanently</button>
     </div>
+<div class="footer-summary-container">
+        <div class="bank-details" contenteditable="true">
+            <div class="bank-header">BANK DETAILS</div>
+            <div>Bank Name: <span class="placeholder-text">BDO</span></div>
+            <div>Account Name: <span class="placeholder-text">Cayu Transport</span></div>
+            <div>Account Number: <span class="placeholder-text">001851272052</span></div>
+        </div>
 
-    <div class="footer-summary">
-        <h3 class="total-display">TOTAL AMOUNT PAYABLE Php <span id="grandTotal">0.00</span></h3>
-    </div> <div class="signatures-container">
+        <div class="total-section-right">
+            <h3 class="total-display">TOTAL AMOUNT PAYABLE Php <span id="grandTotal">0.00</span></h3>
+            <div class="total-words" contenteditable="true">Zero Pesos Only</div>
+        </div>
+    </div> 
+
+    <div class="signatures-container">
         <div class="sig-row">
             <div class="sig-col">
                 <p>Prepared by:</p>
@@ -114,15 +156,13 @@
             </div>
 
             <div class="sig-col center-text"> 
-                <div class="total-words" contenteditable="true">
-                    Zero Pesos Only
-                </div>
                 <div class="received-by-section">
                     <div class="received-by">Received by:</div>
                     <div class="sig-title-received">Print name date & Signature</div>
                 </div>
             </div>
         </div>
+
 
         <div class="sig-row" style="margin-top: 3px;">
             <div class="sig-col">
